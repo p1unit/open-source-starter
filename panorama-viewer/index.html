@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sphere</title>
+</head>
+<body>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+  <script type="text/javascript" src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+   <script type="text/javascript">
+   	   
+  let scene,camera,renderer,box;      
+ function init() {
+
+ scene = new THREE.Scene();
+
+ box = getBox(1, 100, 100);
+
+scene.add(box);
+
+ camera = new THREE.PerspectiveCamera(70, 
+window.innerWidth/window.innerHeight, 0.1, 1000 ); // Specify camera type like this
+camera.position.set(0,2.5,2.5); // Set position like this
+camera.lookAt(new THREE.Vector3(0,0,0)); // Set look at coordinate like this
+
+ renderer = new THREE.WebGLRenderer({antialias:true});
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+        let controls = new THREE.OrbitControls(camera,renderer.domElement);
+        controls.addEventListener('change', renderer);
+        controls.maxDistance = 3.5;
+        
+
+animate();
+}
+
+function getBox(w, h, d) {
+var geometry = new THREE.SphereGeometry(w, h, d);
+var texture = new THREE.TextureLoader().load( 'https://i.imgur.com/BJkW6vF.jpg' );
+// immediately use the texture for material creation
+var material = new THREE.MeshBasicMaterial( { map: texture } );
+ material.side = THREE.BackSide;
+var mesh = new THREE.Mesh(geometry, material);
+
+return mesh;
+} 
+function animate()
+{
+	requestAnimationFrame(animate);
+     box.rotation.y += 0.005;
+    renderer.render(scene, camera);
+   
+}
+init();
+
+   	    
+   	    
+   </script>
+</body>
+</html>
