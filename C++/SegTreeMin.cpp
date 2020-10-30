@@ -88,7 +88,7 @@ int main()
     vl a={2,4,7,5,1};
     st.build(a); //creates a segment tree containing elements from vector a
     cout << st.minim(0,4) << "\n"; //prints the minimum from index 0(inclusive) to index 4(exclusive), output : "2" min(2,4,7,5)
-    st.set(0,10); //sets the element at index 0 to 10, Vector becomes (10,4,7,5)
+    st.set(0,10); //sets the element at index 0 to 10, Vector now becomes (10,4,7,5)
     cout << st.minim(0,4); //again prints the sum from index 0(inclusive) to index 4(exclusive), output : "4" min(10,4,7,5)
     return 0;
 }
