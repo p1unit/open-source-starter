@@ -1,13 +1,17 @@
 #include<bits/stdc++.h>
 #define ll long long int
 #define vl vector<ll>
+#define pl pair<ll,ll>
+#define vp vector<pl>
 #define pb push_back
+#define F first
+#define S second
 using namespace std;
 
 
 struct segtree{
     ll size;
-    vl sums;
+    vp sums;
     void init(int n)
     {
         size=1;
@@ -15,7 +19,7 @@ struct segtree{
         {
             size*=2;
         }
-        sums.assign(2*size,0LL);
+        sums.assign(2*size,{0LL,0LL});
     }
     
     void build(vl &a,ll x,ll lx,ll rx)
@@ -24,15 +28,21 @@ struct segtree{
         {
             if(lx<(ll)a.size())
             {
-                sums[x]=a[lx];
+                sums[x].F=a[lx];
+                sums[x].S=1;
             }
             return;
         }
         ll m=(lx+rx)/2;
         build(a,2*x + 1,lx,m);
         build(a,2*x + 2,m,rx);
-        sums[x]=min(sums[2*x + 1],sums[2*x + 2]);
-    
+        sums[x].F=min(sums[2*x + 1].F,sums[2*x + 2].F);
+        if(sums[2*x + 1].F<sums[2*x + 2].F)
+        sums[x].S=sums[2*x + 1].S;
+        else if(sums[2*x + 1].F>sums[2*x + 2].F)
+        sums[x].S=sums[2*x + 2].S;
+        else
+        sums[x].S=sums[2*x + 1].S + sums[2*x + 2].S;
     }
     
     void build(vl &a)
@@ -44,7 +54,8 @@ struct segtree{
     {
         if(rx-lx==1)
         {
-        sums[x]=v;
+        sums[x].F=v;
+        sums[x].S=1;
         return;
         }
         ll m=(lx+rx)/2;
@@ -52,7 +63,13 @@ struct segtree{
         set(i,v,2*x + 1,lx,m);
         else
         set(i,v,2*x + 2,m,rx);
-        sums[x]=min(sums[2*x + 1],sums[2*x + 2]);
+        sums[x].F=min(sums[2*x + 1].F,sums[2*x + 2].F);
+        if(sums[2*x + 1].F<sums[2*x + 2].F)
+        sums[x].S=sums[2*x + 1].S;
+        else if(sums[2*x + 1].F>sums[2*x + 2].F)
+        sums[x].S=sums[2*x + 2].S;
+        else
+        sums[x].S=sums[2*x + 1].S + sums[2*x + 2].S;
     }
     
     void set(int i,int v)
@@ -60,19 +77,21 @@ struct segtree{
         set(i,v,0,0,size);
     }
     
-    ll minim(ll l,ll r,ll x,ll lx,ll rx)
+    pl minim(ll l,ll r,ll x,ll lx,ll rx)
     {
         if(lx>=r || l>=rx)
-        return 10000000000;
+        return {10000000000,0};
         if(lx>=l && rx<=r)
         return sums[x];
         ll m=(lx+rx)/2;
-        ll s1=minim(l,r,2*x + 1,lx,m);
-        ll s2=minim(l,r,2*x + 2,m,rx);
+        pl s1=minim(l,r,2*x + 1,lx,m);
+        pl s2=minim(l,r,2*x + 2,m,rx);
+        if(s1.F==s2.F)
+        return {s1.F,s1.S + s2.S};
         return min(s1 , s2);
     }
     
-    ll minim(ll l,ll r)
+    pl minim(ll l,ll r)
     {
         return minim(l,r,0,0,size);
     }
@@ -85,10 +104,10 @@ int main()
 {
     segtree st;
     st.init(5);
-    vl a={2,4,7,5,1};
-    st.build(a); //creates a segment tree containing elements from vector a
-    cout << st.minim(0,4) << "\n"; //prints the minimum from index 0(inclusive) to index 4(exclusive), output : "2" min(2,4,7,5)
-    st.set(0,10); //sets the element at index 0 to 10, Vector now becomes (10,4,7,5)
-    cout << st.minim(0,4); //again prints the sum from index 0(inclusive) to index 4(exclusive), output : "4" min(10,4,7,5)
+    vl a={3,4,3,5,2};
+    st.build(a);
+    cout << "Minimum element: " << st.minim(0,4).F << ", Frequency: " << st.minim(0,4).S << "\n";
+    st.set(1,2);
+    cout << "Minimum element: " << st.minim(0,5).F << ", Frequency: " << st.minim(0,5).S << "\n";
     return 0;
 }
